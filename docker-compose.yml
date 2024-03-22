@@ -37,3 +37,20 @@ services:
     ports:
       - 3002:3000
       - 2225:2225
+  loadbalancer:
+    build:
+      context: loadbalancer
+    restart: unless-stopped
+    network_mode: "bridge"
+    environment:
+      - SSH_ENABLE_ROOT=true
+    volumes:
+      - ./secrets/id_rsa_container.pub:/root/.ssh/authorized_keys
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 80:80
+      - 2226:2226
+    depends_on:
+      - managedhost-app-1
+      - managedhost-app-2
+      - managedhost-app-3
